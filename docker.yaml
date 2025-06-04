@@ -1,0 +1,24 @@
+---
+- name: Lancer un conteneur Docker sur la machine cible
+  hosts: kvm4
+  become: true
+  collections:
+    - community.docker
+
+  tasks:
+    # - name: Install requests % packaging
+    #   ansible.builtin.apt:
+    #     name:
+    #       - python3-packaging
+    #       - python3-requests
+    #       - python3-pip
+    #     state: present
+    #     update_cache: yes
+
+    - name: Lancer le conteneur nginx
+      community.docker.docker_container:
+        name: nginx
+        image: nginx:latest
+        state: started
+        ports:
+          - "8080:80"

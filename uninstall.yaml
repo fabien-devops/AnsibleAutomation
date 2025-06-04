@@ -1,0 +1,31 @@
+---
+- name: Install node and npm
+  hosts: kvm4
+  become: yes
+  tasks:
+    - name: Remove nodejs and npm package
+      apt:
+        name:
+          - nodejs
+          - npm 
+        state: absent
+
+    - name: Remove global node_modules
+      file: 
+        path: /usr/local/lib/node_modules
+        state: absent
+
+    - name: Remove node and npm binaries if they exist
+      file: 
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /usr/bin/node
+        - /usr/bin/npm
+        - /usr/local/bin/node
+        - /usr/local/bin/npm
+    
+    - name: clean apt cache
+      apt:
+        autoclean: yes
+        autoremove: yes

@@ -1,0 +1,81 @@
+---
+- name: Uninstall nexus
+  hosts: kvm4
+  become: true
+  become_user: root
+  tasks:
+    - name: stop nexus
+      command: /opt/nexus/bin/nexus stop
+      ignore_errors: yes
+    - name: find all nexus folder
+      find:
+        paths: /opt/
+        patterns: '*nexus*'
+        file_type: directory
+      register: nexus_dirs
+    - name: delete all nexus found
+      file: 
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ nexus_dirs.files }}"
+    - name: remove sonatype-work
+      file:
+        path: /opt/sonatype-work
+        state: absent
+    - name: remove .taz.gz
+      file: 
+        path: /opt/nexus-3.80.0-06-linux-x86_64.tar.gz
+        state: absent
+
+- name: Uninstall Java
+  hosts: kvm4
+  become: yes
+  tasks:
+    - name: remove java package
+      apt:  
+        name: bellsoft-java8
+        state: absent
+        purge: yes
+    - name: remove all folder java
+      file:
+        path: /opt/bellsoft-jdk8u412+9-linux-amd64.deb
+        state: absent 
+    - name: remove java lib
+      file:
+        path: /usr/lib/jvm
+        state: absent
+
+- name: remove nexus user and group
+  gather_facts: no
+  hosts: kvm4
+  become: true
+  
+  # vars:
+  #   group_to_remove: nexus
+  #   new_groups_list: []
+  #   user_to_check: nexus
+
+  # tasks:
+  #   - user: name="{{ user_to_check }}" groups=nexus
+
+  #   - name: get the current groups list 
+  #     commande: groups {{ user_to_check }}
+  #     register: current_groups
+    
+  tasks:
+    - name: remove nexus user
+      user:
+        name: nexus
+        state: absent
+        remove: yes
+
+    - name: nexus
+      group:
+        name: nexus
+        state: absent
+
+    - name: Verify Nexus process is stopped
+      shell: pgrep -f sonatype-nexus-repository || echo "No nexus process"
+      register: nexus_process
+    - debug:
+        msg: "{{ nexus_process.stdout }}"
