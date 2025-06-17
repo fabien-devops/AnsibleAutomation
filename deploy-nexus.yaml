@@ -19,7 +19,7 @@
       debug: 
         msg: "{{java_version.stderr_lines}}"
 
-- name: Dowload and unpack Nexus installer
+- name: Download and unpack Nexus installer
   hosts: kvm4
   become: true
   gather_facts: false
