@@ -58,7 +58,7 @@ ansible/
 Install the Docker collection:
 ```bash
 ansible-galaxy collection install community.docker
-
+```
 ⚙️ Usage
 1. Clone the repository
 git clone https://github.com/fabien-devops/ansible.git
