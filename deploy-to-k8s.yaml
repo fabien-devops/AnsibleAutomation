@@ -1,0 +1,17 @@
+---
+- name: Deploy app in new namescape
+  hosts: localhost
+  tasks:
+    - name: Create a k8s namescape
+      k8s:
+        name: my-app
+        api_version: v1
+        kind: Namescape
+        state: present
+        kubeconfig: ~/home/fabien/terraform/kubeconfig_myapp-eks-cluster
+    - name: Deploy nginx app
+      k8s:
+        src: /path/project/confi-nginx.yaml
+        state: present
+        kubeconfig: ~/home/fabien/terraform/kubeconfig_myapp-eks-cluster
+        namespace: my-app

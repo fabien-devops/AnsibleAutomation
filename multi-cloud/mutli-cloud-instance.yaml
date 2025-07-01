@@ -1,0 +1,50 @@
+---
+- name: Launch EC2 instance in AWS
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Launch EC2 instance
+      ec2:
+        key_name: EC2-Instance-key
+        instance_type: t2.mirco
+        image: ami-0abcdef1234567890
+        region: us-east-1
+        group: security-group
+        wait: yes
+      register: ec2
+    - debug:
+        var: ec2
+
+- name: Create a Virtual Machine in Azure
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Create a resource group
+      azure.azcollection.azure_rm_resource:
+        name : myResourceGroup
+        location: eastus
+    - name: Create a virtual Machine
+      ansible.builtin.azure_rm_virtualmachine:
+        resource_group: myResourceGroup
+        name: myVM
+        vm_size: Standard_DS2_v1
+        admin_username: azureuser
+        image: 
+          offer: UbuntuServer
+          publisher: Canonical
+          sku: '18.04-LTS'
+          version: latest
+
+- name: Launch GCE instance
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Create GCE instance
+      gce: 
+        machine_type: n1-standard-1
+        image: debian-12
+        zone: us-central-a
+        project_id: my-group-project
+        credentials_file: /path/to/credentials.json
+        
