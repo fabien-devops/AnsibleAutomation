@@ -1,0 +1,8 @@
+---
+- name: Install MySQL on Local
+  # hosts: aws_ec2
+  hosts: mysql_servers
+  become: true
+
+  roles:
+    - geerlingguy.mysql

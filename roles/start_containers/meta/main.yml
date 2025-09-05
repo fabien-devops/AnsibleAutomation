@@ -1,0 +1,12 @@
+galaxy_info:
+  author: fabien
+  role_name: start_containers
+  namespace: fabien
+  description: Role to start containers with Docker
+  license: MIT
+  min_ansible_version: 2.10
+  platforms:
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm

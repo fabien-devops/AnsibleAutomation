@@ -1,0 +1,12 @@
+ansible-galaxy install geerlingguy.mysql
+
+ansible-playbook -i hostss mysql.yml --ask-become-pass
+
+ansible-vault encrypt vars.yml
+
+sudo systemctl stop mysql
+sudo apt purge mysql-server mysql-client mysql-common mysql-server-core-* mysql-client-core-*
+sudo rm -rf /etc/mysql /var/lib/mysql /var/log/mysql
+dpkg -l | grep mysql
+
+

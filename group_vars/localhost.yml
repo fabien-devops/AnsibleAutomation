@@ -1,0 +1,8 @@
+mysql_root_password: "root123"
+mysql_databases:
+  - name: my_local_db
+mysql_users:
+  - name: local_user
+    host: "%"
+    password: "userpass123"
+    priv: "my_local_db.*:ALL"

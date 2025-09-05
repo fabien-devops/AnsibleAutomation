@@ -1,0 +1,14 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  tasks:
+    - name: Check if user exists
+      ansible.builtin.command: id fabien
+      register: result
+      changed_when: false
+      failed_when: result.rc != 0
+
+    - name: Show result
+      ansible.builtin.debug:
+        var: result.stdout

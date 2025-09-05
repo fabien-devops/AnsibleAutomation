@@ -3,3 +3,6 @@ nexus_host ansible_host=178.16.131.132 ansible_ssh_private_key=~/.ssh/id_ed25519
 
 [docker_server]
 13.37.236.73 ansible_ssh_private_key=/home/fabien/.ssh/id_rsa.pub ansible_user=ec2-user ansible_port=22
+
+[mysql_servers]
+localhost ansible_connection=local ansible_python_interpreter=/usr/bin/python3.11

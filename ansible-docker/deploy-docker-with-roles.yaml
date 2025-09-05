@@ -1,0 +1,85 @@
+- name: Wait for ssh connection
+  hosts: aws_ec2
+  gather_facts: false
+  tasks:
+    - name: Ensure ssh port open
+      ansible.builtin.wait_for:
+        port: 22
+        delay: 10
+        timeout: 100
+        search_regex: OpenSSH
+        host: '{{ (ansible_ssh_host | default(ansible_host)) | default(inventory_hostname) }}'
+      # vars:
+      #     ansible_python_interpreter: /usr/bin/python
+      #     ansible_connection: local
+
+- name: Install docker
+  hosts: aws_ec2
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Install docker
+      ansible.builtin.yum:
+        name: docker
+        update_cache: true
+        state: present
+    - name: Adding user to docker group
+      ansible.builtin.user:
+        name: ec2-user
+        groups: docker
+        append: true
+    - name: Reconnecte to server session
+      ansible.builtin.meta: reset_connection
+
+- name: Start docker
+  hosts: aws_ec2
+  become: true
+  tasks:
+    - name: Start docker daemon
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+    - name: Check status docker
+      ansible.builtin.command: systemctl status docker
+      register: docker_status
+      changed_when: false
+    - name: Verifie status docker
+      ansible.builtin.debug:
+        msg: "{{ docker_status.stdout_lines }}"
+
+- name: Install docker compose v2
+  hosts: aws_ec2
+  become: true
+  tasks:
+    - name: Create directory for Docker CLI plugin
+      ansible.builtin.file:
+        path: /usr/local/lib/docker/cli-plugins
+        state: directory
+        mode: '0755'
+    - name: Download docker Compose v2 binary
+      ansible.builtin.get_url:
+        url: https://github.com/docker/compose/releases/download/v2.36.2/docker-compose-linux-x86_64
+        dest: /usr/local/lib/docker/cli-plugins/docker-compose
+        mode: a+x
+    - name: Check version docker compose
+      ansible.builtin.command: docker compose version
+      register: docker_version
+      changed_when: false
+    - name: Check docker version
+      ansible.builtin.debug:
+        msg: "{{ docker_version.stdout_lines }}"
+
+- name: Create new linux user
+  hosts: aws_ec2
+  become: true
+  vars:
+    user_groups: adm, docker
+  roles:
+    - create_user
+
+- name: Start docker containers
+  hosts: aws_ec2
+  vars_files:
+    - my-vars
+  roles:
+    - start_containers

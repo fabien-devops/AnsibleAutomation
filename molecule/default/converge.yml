@@ -1,0 +1,16 @@
+# - name: Include a playbook from a collection
+#   ansible.builtin.import_playbook: ../../ansible-doker/deploy-docker-with-roles.yaml
+
+# - name: Include a role from a collection
+#   hosts: localhost
+#   gather_facts: false
+#   tasks:
+#     - name: Testing role
+#       ansible.builtin.include_role:
+#         name: ../../roles/create_user
+#         # tasks_from: main.yml
+- name: Converge
+  hosts: all
+  become: true
+  roles:
+    - role: ../../roles/create_user
